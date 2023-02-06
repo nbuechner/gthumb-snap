@@ -1,6 +1,6 @@
-name: gthumb # you probably want to 'snapcraft register <name>'
+name: gthumb-unofficial # you probably want to 'snapcraft register <name>'
 base: core22 # the base snap is the execution environment for this snap
-version: '3.1.2-git' # just for humans, typically '1.2+git' or '1.3.2'
+version: '3.12.2' # just for humans, typically '1.2+git' or '1.3.2'
 summary: An image viewer and browser utility for the GNOME environment
 description: |
     gThumb is an image viewer and browser for the GNOME Desktop. It also includes an importer tool for transferring photos from cameras. 
@@ -17,19 +17,18 @@ apps:
   gthumb:
     command: usr/bin/gthumb
     desktop: usr/share/applications/org.gnome.gThumb.desktop
-    plugs: [home, x11, desktop, desktop-legacy, removable-media, mount-observe]
+    plugs: [home, x11, desktop, desktop-legacy, removable-media, network]
     extensions: [ gnome ]
     slots: [ dbus-gthumb ]
 
 parts:
   main:
-    source-type: git
-    source: https://github.com/GNOME/gthumb
+    source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.2.tar.xz
     # See 'snapcraft plugins'
     plugin: meson
-    meson-parameters: [--prefix=/snap/gthumb/current/usr]
+    meson-parameters: [--prefix=/snap/gthumb-unofficial/current/usr]
     organize:
-      snap/gthumb/current/usr: usr
+      snap/gthumb-unofficial/current/usr: usr
 
     override-pull: |
        rm -f /etc/resolv.conf
@@ -43,14 +42,12 @@ parts:
        echo "213.202.193.253 security.ubuntu.com" >> /etc/hosts
        snapcraftctl pull
 
-    override-build: |
-       snapcraftctl build
-
     override-prime: |
-       snapcraftctl prime
+       craftctl default
        set -eux
        glib-compile-schemas usr/share/glib-2.0/schemas
        sed -i 's|Icon=org.gnome.gThumb|Icon=usr/share/icons/hicolor/scalable/apps/org.gnome.gThumb.svg|g' usr/share/applications/org.gnome.gThumb.desktop
+
 
     stage-packages:
       - desktop-file-utils
