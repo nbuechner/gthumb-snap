@@ -7,9 +7,13 @@ description: |
 grade: stable
 confinement: strict
 architectures:
-   - amd64
-   - arm64
-   - armhf
+  - build-on: amd64
+    build-for: amd64
+  - build-on: arm64
+    build-for: arm64
+  - build-on: armhf
+    build-for: armhf
+
 slots:
    dbus-gthumb:
       interface: dbus
