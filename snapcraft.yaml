@@ -1,6 +1,6 @@
 name: gthumb-unofficial
 base: core22
-version: '3.12.2'
+version: '3.12.3'
 summary: An image viewer and browser utility for the GNOME environment
 description: |
     gThumb is an image viewer and browser for the GNOME Desktop. It also includes an importer tool for transferring photos from cameras.
@@ -30,7 +30,7 @@ apps:
 
 parts:
   main:
-    source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.2.tar.xz
+    source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.3.tar.xz
     plugin: meson
     meson-parameters: [--prefix=/snap/gthumb-unofficial/current/usr]
     organize:
