@@ -58,6 +58,7 @@ parts:
       - brasero
       - gsettings-desktop-schemas
       - libglib2.0-0
+      - execstack
 
     build-packages:
       - libglib2.0-0
