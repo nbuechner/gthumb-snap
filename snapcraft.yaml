@@ -41,6 +41,9 @@ parts:
        set -eux
        glib-compile-schemas usr/share/glib-2.0/schemas
        sed -i 's|Icon=org.gnome.gThumb|Icon=usr/share/icons/hicolor/scalable/apps/org.gnome.gThumb.svg|g' usr/share/applications/org.gnome.gThumb.desktop
+       if [ -f usr/lib/arm-linux-gnueabihf/libde265.so.0.1.1 ]; then
+          execstack --clear-execstack usr/lib/arm-linux-gnueabihf/libde265.so.0.1.1
+       fi
 
     stage-packages:
       - desktop-file-utils
