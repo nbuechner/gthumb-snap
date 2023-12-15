@@ -30,7 +30,7 @@ apps:
 
 parts:
   main:
-    source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.3.tar.xz
+    source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.4.tar.xz
     plugin: meson
     meson-parameters: [--prefix=/snap/gthumb-unofficial/current/usr]
     organize:
