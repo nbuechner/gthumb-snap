@@ -27,12 +27,15 @@ apps:
     plugs: [home, x11, desktop, desktop-legacy, removable-media, network]
     extensions: [ gnome ]
     slots: [ dbus-gthumb ]
+    environment:
+       DISABLE_WAYLAND: 1
+       GIO_MODULE_DIR: ""
 
 parts:
   main:
-    source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.4.tar.xz
+    source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.6.tar.xz
     plugin: meson
-    meson-parameters: [--prefix=/snap/gthumb-unofficial/current/usr]
+    meson-parameters: [--prefix=/snap/gthumb-unofficial/current/usr --disable-wayland-backend]
     organize:
       snap/gthumb-unofficial/current/usr: usr
 
@@ -59,6 +62,7 @@ parts:
       - gsettings-desktop-schemas
       - libglib2.0-0
       - execstack
+      - libgtk-3-0
 
     build-packages:
       - libglib2.0-0
@@ -79,3 +83,15 @@ parts:
       - libglib2.0-dev
       - gettext
       - itstool
+
+  cleanup:
+       after: [main]
+       plugin: nil
+       build-snaps:
+         - gnome-42-2204
+         - core22
+       override-prime: |
+         set -eux
+         for snap in "gnome-42-2204" "core22"; do
+             cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$CRAFT_PRIME/{}" \;
+         done
