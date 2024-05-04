@@ -1,0 +1,31 @@
+name: Build and publish snap to stable channel
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+        - arm64
+        - amd64
+        - armhf
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - name: Snapcraft build
+        id: snapcraft_build
+        uses: diddlesnaps/snapcraft-multiarch-action@v1
+        with:
+           architecture: ${{ matrix.platform }}
+      - name: Snapcraft publish
+        id: snapcraft_publish
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+        with:
+          snap: ${{ steps.snapcraft_build.outputs.snap }}
+          release: stable
