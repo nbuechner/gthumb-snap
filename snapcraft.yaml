@@ -17,6 +17,14 @@ slots:
       bus: session
       name: org.gnome.gThumb
 
+layout:
+  /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gthumb/extensions:
+    symlink: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gthumb/extensions
+  /usr/share/gthumb:
+    symlink: $SNAP/usr/share/gthumb
+  /usr/share/help:
+    symlink: $SNAP/usr/share/help
+
 apps:
   gthumb:
     command: usr/bin/gthumb
@@ -32,9 +40,7 @@ parts:
   main:
     source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.7.tar.xz
     plugin: meson
-    meson-parameters: [--prefix=/snap/gthumb-unofficial/current/usr]
-    organize:
-      snap/gthumb-unofficial/current/usr: usr
+    meson-parameters: [--prefix=/usr]
 
     override-prime: |
        craftctl default
