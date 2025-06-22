@@ -1,19 +1,15 @@
 name: gthumb-unofficial
-base: core22
-version: '3.12.6'
+base: core24
 version: '3.12.7'
 summary: An image viewer and browser utility for the GNOME environment
 description: |
     gThumb is an image viewer and browser for the GNOME Desktop. It also includes an importer tool for transferring photos from cameras.
 grade: stable
 confinement: strict
-architectures:
-  - build-on: amd64
-    build-for: amd64
-  - build-on: arm64
-    build-for: arm64
-  - build-on: armhf
-    build-for: armhf
+platforms:
+  amd64:
+  arm64:
+  armhf:
 
 slots:
    dbus-gthumb:
@@ -50,49 +46,34 @@ parts:
        fi
 
     stage-packages:
-      - desktop-file-utils
-      - libjpeg9
-      - libpng16-16
-      - zlib1g
       - librsvg2-2
-      - libwebp7
-      - libraw-bin
-      - libheif1
       - liblcms2-2
-      - brasero
+      - libjxl0.7
+      - libraw23t64
       - gsettings-desktop-schemas
-      - libglib2.0-0
-      - execstack
-      - libgtk-3-0
+      - libexiv2-dev
 
     build-packages:
-      - libglib2.0-0
-      - libpng-dev
-      - libjpeg-dev
-      - zlib1g-dev
       - libraw-dev
       - librsvg2-dev
-      - libwebp-dev
-      - libheif-dev
       - liblcms2-dev
-      - libclutter-gtk-1.0-dev
-      - libjpeg-dev
-      - gsettings-desktop-schemas-dev
+      - libcolord-gtk-dev
+      - libjxl-dev
+      - meson
+      - libexiv2-dev
+      - gettext
       - bison
       - flex
-      - meson
-      - libglib2.0-dev
-      - gettext
       - itstool
 
   cleanup:
        after: [main]
        plugin: nil
        build-snaps:
-         - gnome-42-2204
-         - core22
+         - gnome-46-2404
+         - core24
        override-prime: |
          set -eux
-         for snap in "gnome-42-2204" "core22"; do
+         for snap in "gnome-46-2404" "core24"; do
              cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$CRAFT_PRIME/{}" \;
          done
