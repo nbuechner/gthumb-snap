@@ -35,7 +35,7 @@ parts:
   main:
     source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.6.tar.xz
     plugin: meson
-    meson-parameters: [--prefix=/snap/gthumb-unofficial/current/usr --disable-wayland-backend]
+    meson-parameters: [--prefix=/snap/gthumb-unofficial/current/usr]
     organize:
       snap/gthumb-unofficial/current/usr: usr
 
