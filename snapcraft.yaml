@@ -1,6 +1,6 @@
 name: gthumb-unofficial
 base: core24
-version: '3.12.7'
+version: '3.12.8'
 summary: An image viewer and browser utility for the GNOME environment
 description: |
     gThumb is an image viewer and browser for the GNOME Desktop. It also includes an importer tool for transferring photos from cameras.
@@ -38,9 +38,13 @@ apps:
 
 parts:
   main:
-    source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.7.tar.xz
+    source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.8.tar.xz
     plugin: meson
     meson-parameters: [--prefix=/usr]
+
+    override-pull: |
+       craftctl default
+       sed -i 's/task, true/task, TRUE/g' $CRAFT_PART_SRC/extensions/image_rotation/rotation-utils.c
 
     override-prime: |
        craftctl default
