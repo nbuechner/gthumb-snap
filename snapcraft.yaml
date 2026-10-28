@@ -1,9 +1,9 @@
 name: gthumb-unofficial
-base: core24
-version: '3.12.10'
+base: core26
+version: '4.0'
 summary: An image viewer and browser utility for the GNOME environment
 description: |
-    gThumb is an image viewer and browser for the GNOME Desktop. It also includes an importer tool for transferring photos from cameras.
+    Thumbnails is an image viewer and browser for the GNOME Desktop. It also includes an importer tool for transferring photos from cameras.
 grade: stable
 confinement: strict
 platforms:
@@ -15,7 +15,7 @@ slots:
    dbus-gthumb:
       interface: dbus
       bus: session
-      name: org.gnome.gThumb
+      name: org.gnome.gthumb
 
 layout:
   /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gthumb/extensions:
@@ -28,41 +28,32 @@ layout:
 apps:
   gthumb:
     command: usr/bin/gthumb
-    desktop: usr/share/applications/org.gnome.gThumb.desktop
+    desktop: usr/share/applications/org.gnome.gthumb.desktop
     plugs: [home, x11, desktop, desktop-legacy, removable-media, network]
-    extensions: [ gnome ]
-    slots: [ dbus-gthumb ]
+    extensions: [gnome]
+    slots: [dbus-gthumb]
     environment:
        DISABLE_WAYLAND: 1
        GIO_MODULE_DIR: ""
 
 parts:
   main:
-    source: https://download.gnome.org/sources/gthumb/3.12/gthumb-3.12.10.tar.xz
+    source: https://download.gnome.org/sources/gthumb/4.0/gthumb-4.0.tar.xz
     plugin: meson
     meson-parameters: [--prefix=/usr]
 
     override-pull: |
        craftctl default
-       sed -i 's/task, true/task, TRUE/g' $CRAFT_PART_SRC/extensions/image_rotation/rotation-utils.c
-
-    override-prime: |
-       craftctl default
-       set -eux
-       glib-compile-schemas usr/share/glib-2.0/schemas
-       sed -i 's|Icon=org.gnome.gThumb|Icon=usr/share/icons/hicolor/scalable/apps/org.gnome.gThumb.svg|g' usr/share/applications/org.gnome.gThumb.desktop
-       if [ -f usr/lib/arm-linux-gnueabihf/libde265.so.0.1.1 ]; then
-          execstack --clear-execstack usr/lib/arm-linux-gnueabihf/libde265.so.0.1.1
-       fi
+       # Fix a crash (segfault via g_variant_new_string(NULL) deep inside
+       # libcolord) that occurs when Gdk.Monitor.description is NULL,
+       # which can happen under sandboxed/non-standard display setups.
+       patch -p1 -d "$CRAFT_PART_SRC" < "$CRAFT_PROJECT_DIR/patches/0001-gth-color-manager-fix-null-monitor-name-crash.patch"
 
     stage-packages:
-      - librsvg2-2
-      - liblcms2-2
-      - libjxl0.7
-      - libraw23t64
       - gsettings-desktop-schemas
+      # Bundle missing libraries to avoid "cannot open shared object file" errors
+      - libgstreamer1.0-dev
       - libexiv2-dev
-
     build-packages:
       - libraw-dev
       - librsvg2-dev
@@ -75,15 +66,8 @@ parts:
       - bison
       - flex
       - itstool
-
-  cleanup:
-       after: [main]
-       plugin: nil
-       build-snaps:
-         - gnome-46-2404
-         - core24
-       override-prime: |
-         set -eux
-         for snap in "gnome-46-2404" "core24"; do
-             cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$CRAFT_PRIME/{}" \;
-         done
+      # libjpeg-turbo8-dev (not libjpeg9-dev, which conflicts with it and has
+      # a different, ABI-incompatible SONAME): gnome-platform already ships
+      # the runtime libjpeg-turbo8 (libjpeg.so.8), so build against the same
+      # version instead of bundling a second, colliding libjpeg at runtime.
+      - libjpeg-turbo8-dev
