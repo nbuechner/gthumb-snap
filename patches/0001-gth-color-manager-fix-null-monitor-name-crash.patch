@@ -1,0 +1,26 @@
+diff --git a/src/lib/gth-color-manager.c b/src/lib/gth-color-manager.c
+index c2772b6..f43bf87 100644
+--- a/src/lib/gth-color-manager.c
++++ b/src/lib/gth-color-manager.c
+@@ -326,6 +326,21 @@ _cd_client_find_device_for_task (CdClient *cd_client,
+ 				 GTask    *task)
+ {
+ 	ProfilesData *data = g_task_get_task_data (task);
++
++	if (data->monitor_name == NULL) {
++		/* Gdk.Monitor.description can be NULL (e.g. under some
++		 * sandboxed / non-standard display setups); colord's
++		 * property-based lookup requires a non-NULL value, so fall
++		 * back to a generic display-kind lookup instead of passing
++		 * NULL into libcolord. */
++		cd_client_get_devices_by_kind (cd_client,
++					       CD_DEVICE_KIND_DISPLAY,
++					       g_task_get_cancellable (task),
++					       find_device_by_kind_cb,
++					       task);
++		return;
++	}
++
+ 	cd_client_find_device_by_property (cd_client,
+ 					   CD_DEVICE_PROPERTY_MODEL,
+ 					   data->monitor_name,
